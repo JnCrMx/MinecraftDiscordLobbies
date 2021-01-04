@@ -1,0 +1,22 @@
+{
+  "disconnect.lobbyClosed": "Lobby closed",
+  "discordLobby.locked": "Locked",
+  "discordLobby.title": "Discord Lobby",
+  "discordLobby.type": "Type",
+  "discordLobby.type.PRIVATE": "Private",
+  "discordLobby.type.PUBLIC": "Public",
+  "discordMultiplayer.connect": "Connect",
+  "discordMultiplayer.directConnect": "Connect with Secret",
+  "discordMultiplayer.directConnect.enterSecret": "Activity Secret",
+  "discordMultiplayer.title": "Discord Lobbies",
+  "lobby.player.joined": "%s joined the lobby",
+  "lobby.player.left": "%s left the lobby",
+  "mainMenu.noDiscord": "Discord not present",
+  "menu.shareToDiscord": "Open to Discord",
+  "shareToDiscord.failed": "Error: %s",
+  "shareToDiscord.setAsActivity": "Set as Activity",
+  "shareToDiscord.start": "Open Lobby",
+  "shareToDiscord.started": "Lobby opened with Activity Secret %s",
+  "shareToDiscord.update": "Update Lobby",
+  "shareToDiscord.updated": "Lobby updated (Activity Secret is %s)"
+}
