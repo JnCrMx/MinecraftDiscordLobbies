@@ -174,8 +174,24 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	@Override
 	public void onMemberDisconnect(long lobbyId, long userId)
 	{
+		if(lobbyId != lobby.getId())
+			return;
+
 		if(userId == this.userId)
 			onLobbyDelete(lobbyId, 0);
+
+		if(userId == serverUser.getUserId())
+		{
+			Lobby lobby = core.lobbyManager().getLobby(lobbyId);
+			if(lobby.getOwnerId() == this.userId)
+			{
+				core.lobbyManager().deleteLobby(lobbyId);
+			}
+			else
+			{
+				onLobbyDelete(lobbyId, 0);
+			}
+		}
 	}
 
 	@Override

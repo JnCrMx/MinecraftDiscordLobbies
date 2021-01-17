@@ -163,6 +163,9 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 	@Override
 	public void onMemberConnect(long lobbyId, long userId)
 	{
+		if(lobbyId != lobby.getId())
+			return;
+
 		DiscordUser user = core.lobbyManager().getMemberUser(lobbyId, userId);
 		userCache.put(userId, user);
 		String name = user.getUsername()+"#"+user.getDiscriminator();
@@ -174,15 +177,24 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 	@Override
 	public void onMemberDisconnect(long lobbyId, long userId)
 	{
+		if(lobbyId != lobby.getId())
+			return;
+
 		DiscordUser user = userCache.remove(userId);
 		String name = user.getUsername()+"#"+user.getDiscriminator();
 
 		TranslationTextComponent c = new TranslationTextComponent("lobby.player.left", name);
 		server.getPlayerList().func_232641_a_(c.mergeStyle(TextFormatting.YELLOW), ChatType.SYSTEM, Util.DUMMY_UUID);
 
-		long peerId = peerIds.get(userId);
-		NetworkManager networkManager = networkManagers.get(peerId);
-		networkManager.closeChannel(new TranslationTextComponent("disconnect.quitting"));
+		Long peerId = peerIds.get(userId);
+		if(peerId != null)
+		{
+			NetworkManager networkManager = networkManagers.get(peerId);
+			if(networkManager != null)
+			{
+				networkManager.closeChannel(new TranslationTextComponent("disconnect.quitting"));
+			}
+		}
 	}
 
 	@Override

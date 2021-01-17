@@ -121,6 +121,7 @@ public class DiscordLobbiesMod
 			if(discordLibrary == null)
 			{
 				LOGGER.fatal("Cannot download Discord Game SDK library!");
+				discordPresent = false;
 				return;
 			}
 			Core.init(discordLibrary);
@@ -128,6 +129,8 @@ public class DiscordLobbiesMod
 		catch(IOException e)
 		{
 			LOGGER.fatal("Cannot download Discord Game SDK library!", e);
+			discordPresent = false;
+			return;
 		}
 
 		eventHandler = new DiscordEventHandler();
