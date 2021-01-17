@@ -91,6 +91,7 @@ public class DiscordLobbiesMod
 	public static final String MOD_ID = "discordlobbies";
 	// Directly reference a log4j logger.
 	private static final Logger LOGGER = LogManager.getLogger();
+	public static final boolean DEV = !FMLLoader.isProduction();
 
 	private static CreateParams createParams;
 	public static Core core;

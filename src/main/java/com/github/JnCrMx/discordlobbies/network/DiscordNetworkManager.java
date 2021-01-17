@@ -1,5 +1,6 @@
 package com.github.JnCrMx.discordlobbies.network;
 
+import com.github.JnCrMx.discordlobbies.DiscordLobbiesMod;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -270,24 +271,30 @@ public class DiscordNetworkManager extends NetworkManager
 
 	private void preprocessPacket(IPacket<?> packet, long time, byte channel)
 	{
-		long ping = System.currentTimeMillis() - time;
-		if(ping > 1000)
+		if(DiscordLobbiesMod.DEV)
 		{
-			Comparator<? super Map.Entry<Class<?>, Integer>> comparator = Map.Entry.comparingByValue();
-			LOGGER.warn("Ping of {} ms on channel {} for packet {}:\n{}",
-			            ping, channel, packet.getClass(),
-			            incomingStats.get(channel).entrySet().stream()
-			                         .sorted(comparator.reversed())
-			                         .map(e->e.getKey()+" -> "+e.getValue())
-			                         .collect(Collectors.joining("\n")));
+			long ping = System.currentTimeMillis() - time;
+			if(ping > 1000)
+			{
+				Comparator<? super Map.Entry<Class<?>, Integer>> comparator = Map.Entry.comparingByValue();
+				LOGGER.warn("Ping of {} ms on channel {} for packet {}:\n{}",
+				            ping, channel, packet.getClass(),
+				            incomingStats.get(channel).entrySet().stream()
+				                         .sorted(comparator.reversed())
+				                         .map(e -> e.getKey() + " -> " + e.getValue())
+				                         .collect(Collectors.joining("\n")));
+			}
 		}
 
 		int[] bestChannels = NetworkConstants.getChannelsForPacket(packet);
 		if(ArrayUtils.contains(bestChannels, channel) ||
 				(channel == DEFAULT_CHANNEL && bestChannels.length == 0))
 		{
-			// only count packets that should be on this channel
-			incomingStats.get(channel).merge(packet.getClass(), 1, Integer::sum);
+			if(DiscordLobbiesMod.DEV)
+			{
+				// only count packets that should be on this channel
+				incomingStats.get(channel).merge(packet.getClass(), 1, Integer::sum);
+			}
 		}
 		else
 		{
