@@ -1,9 +1,9 @@
 package com.github.JnCrMx.discordlobbies.network;
 
 import com.github.JnCrMx.discordlobbies.DiscordLobbiesMod;
-import com.github.JnCrMx.discordlobbies.Utils;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.DiscordEventAdapter;
+import de.jcm.discordgamesdk.DiscordUtils;
 import de.jcm.discordgamesdk.lobby.Lobby;
 import de.jcm.discordgamesdk.lobby.LobbyMemberTransaction;
 import de.jcm.discordgamesdk.user.DiscordUser;
@@ -60,7 +60,7 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	public CompletableFuture<Void> connectToLobby(long lobbyId, String secret)
 	{
 		CompletableFuture<Lobby> future = new CompletableFuture<>();
-		core.lobbyManager().connectLobby(lobbyId, secret, Utils.returningCompleter(future));
+		core.lobbyManager().connectLobby(lobbyId, secret, DiscordUtils.returningCompleter(future));
 
 		return future.thenAccept(lobby->this.lobby = lobby);
 	}
@@ -68,7 +68,7 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	public CompletableFuture<Void> connectToLobby(String activitySecret)
 	{
 		CompletableFuture<Lobby> future = new CompletableFuture<>();
-		core.lobbyManager().connectLobbyWithActivitySecret(activitySecret, Utils.returningCompleter(future));
+		core.lobbyManager().connectLobbyWithActivitySecret(activitySecret, DiscordUtils.returningCompleter(future));
 
 		return future.thenAccept(lobby->this.lobby = lobby);
 	}
@@ -98,7 +98,7 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 		awaitServerReady = new CompletableFuture<>();
 
 		CompletableFuture<Void> future = new CompletableFuture<>();
-		core.lobbyManager().updateMember(lobby, userId, mTxn, Utils.completer(future));
+		core.lobbyManager().updateMember(lobby, userId, mTxn, DiscordUtils.completer(future));
 
 		return future.thenCombine(awaitServerReady, (a,b)->null);
 	}
@@ -181,6 +181,9 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	@Override
 	public void onLobbyDelete(long lobbyId, int reason)
 	{
+		if(lobbyId != lobby.getId())
+			return;
+
 		if(networkManager.isChannelOpen())
 		{
 			networkManager.closeChannel(new TranslationTextComponent("disconnect.lobbyClosed"));

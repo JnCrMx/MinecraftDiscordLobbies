@@ -1,9 +1,9 @@
 package com.github.JnCrMx.discordlobbies.network;
 
 import com.github.JnCrMx.discordlobbies.DiscordLobbiesMod;
-import com.github.JnCrMx.discordlobbies.Utils;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.DiscordEventAdapter;
+import de.jcm.discordgamesdk.DiscordUtils;
 import de.jcm.discordgamesdk.activity.Activity;
 import de.jcm.discordgamesdk.lobby.Lobby;
 import de.jcm.discordgamesdk.lobby.LobbyMemberTransaction;
@@ -88,7 +88,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		txn.setMetadata("minecraft.motd", server.getMOTD());
 
 		CompletableFuture<Lobby> future = new CompletableFuture<>();
-		core.lobbyManager().createLobby(txn, Utils.returningCompleter(future));
+		core.lobbyManager().createLobby(txn, DiscordUtils.returningCompleter(future));
 
 		return future.thenAccept(lobby->this.lobby = lobby);
 	}
@@ -100,7 +100,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		txn.setLocked(locked);
 
 		CompletableFuture<Void> future = new CompletableFuture<>();
-		core.lobbyManager().updateLobby(lobby, txn, Utils.completer(future));
+		core.lobbyManager().updateLobby(lobby, txn, DiscordUtils.completer(future));
 
 		return future.thenAccept(ignored->this.lobby = core.lobbyManager().getLobby(lobby.getId()));
 	}
@@ -115,7 +115,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 			mTxn.setMetadata("network.route", DiscordLobbiesMod.myRoute);
 
 		CompletableFuture<Void> future = new CompletableFuture<>();
-		core.lobbyManager().updateMember(lobby, userId, mTxn, Utils.completer(future));
+		core.lobbyManager().updateMember(lobby, userId, mTxn, DiscordUtils.completer(future));
 
 		return future;
 	}
@@ -138,7 +138,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 			activity.secrets().setJoinSecret(getActivitySecret());
 
 			CompletableFuture<Void> future = new CompletableFuture<>();
-			core.activityManager().updateActivity(activity, Utils.completer(future));
+			core.activityManager().updateActivity(activity, DiscordUtils.completer(future));
 
 			return future.thenAccept(v->this.setAsActivity = true);
 		}
@@ -147,7 +147,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 	public CompletableFuture<Void> clearActivity()
 	{
 		CompletableFuture<Void> future = new CompletableFuture<>();
-		core.activityManager().clearActivity(Utils.completer(future));
+		core.activityManager().clearActivity(DiscordUtils.completer(future));
 
 		return future.thenAccept(v->this.setAsActivity = false);
 	}
@@ -155,7 +155,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 	public CompletableFuture<Void> deleteLobby()
 	{
 		CompletableFuture<Void> future = new CompletableFuture<>();
-		core.lobbyManager().deleteLobby(lobby, Utils.completer(future));
+		core.lobbyManager().deleteLobby(lobby, DiscordUtils.completer(future));
 
 		return future.thenCompose(v->clearActivity());
 	}

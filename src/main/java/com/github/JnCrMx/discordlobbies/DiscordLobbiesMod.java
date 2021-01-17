@@ -3,10 +3,7 @@ package com.github.JnCrMx.discordlobbies;
 import com.github.JnCrMx.discordlobbies.client.ActivityJoinListener;
 import com.github.JnCrMx.discordlobbies.network.LobbyClient;
 import com.github.JnCrMx.discordlobbies.network.LobbyServer;
-import de.jcm.discordgamesdk.Core;
-import de.jcm.discordgamesdk.CreateParams;
-import de.jcm.discordgamesdk.DiscordEventAdapter;
-import de.jcm.discordgamesdk.GameSDKException;
+import de.jcm.discordgamesdk.*;
 import de.jcm.discordgamesdk.user.DiscordUser;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -16,15 +13,15 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.commons.io.IOUtils;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -74,11 +71,8 @@ public class DiscordLobbiesMod
 				File temp = new File(tempDir, name+suffix);
 				temp.deleteOnExit();
 
-				// Open an OutputStream to this file...
-				FileOutputStream fout = new FileOutputStream(temp);
-				// ...and copy the file from the ZIP to it
-				IOUtils.copy(zin, fout);    // Java 8 replacement for InputStream.transferTo(OutputStream)
-				fout.close();
+				// Copy the file from the ZIP to our temporary file
+				Files.copy(zin, temp.toPath());
 
 				// We are done, so close the input stream
 				zin.close();
