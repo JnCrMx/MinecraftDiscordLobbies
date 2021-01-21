@@ -18,5 +18,14 @@
   "shareToDiscord.start": "Open Lobby",
   "shareToDiscord.started": "Lobby opened with Activity Secret %s",
   "shareToDiscord.update": "Update Lobby",
-  "shareToDiscord.updated": "Lobby updated (Activity Secret is %s)"
+  "shareToDiscord.updated": "Lobby updated (Activity Secret is %s)",
+  "versionConflict.mod.unknown": "Mod version unknown!",
+  "versionConflict.mod.incompatible": "Mod version (%s) probably incompatible!",
+  "versionConflict.mod.different": "Mod version (%s) different!",
+  "versionConflict.forge.unknown": "Forge version unknown!",
+  "versionConflict.forge.incompatible": "Forge version (%s) probably incompatible!",
+  "versionConflict.forge.different": "Forge version (%s) different!",
+  "versionConflict.minecraft.unknown": "Minecraft version unknown!",
+  "versionConflict.minecraft.incompatible": "Minecraft version (%s) probably incompatible!",
+  "versionConflict.minecraft.different": "Minecraft version (%s) different!"
 }

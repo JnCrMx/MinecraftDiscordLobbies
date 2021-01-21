@@ -78,7 +78,7 @@ public class ShareToDiscordScreen extends Screen
 			finishAction = e->{
 				this.minecraft.displayGuiScreen(null);
 
-				server.updateLobby(type, lockButton.isChecked())
+				server.updateLobby(type, lockButton.isChecked(), activityButton.isChecked())
 				      .thenCompose(v -> activityButton.isChecked() ? server.setActivity() : server.clearActivity())
 				      .thenRun(() -> this.minecraft.ingameGUI.getChatGUI().printChatMessage(
 				      		new TranslationTextComponent("shareToDiscord.updated", server.getActivitySecret())))
@@ -100,7 +100,7 @@ public class ShareToDiscordScreen extends Screen
 				LobbyServer server = new LobbyServer(minecraft.getIntegratedServer(), DiscordLobbiesMod.core);
 				DiscordLobbiesMod.theServer = server;
 				DiscordLobbiesMod.eventHandler.addListener(server);
-				server.createLobby(type, lockButton.isChecked())
+				server.createLobby(type, lockButton.isChecked(), activityButton.isChecked())
 				      .thenCompose(v -> server.selfJoin(minecraft.player))
 				      .thenCompose(v -> activityButton.isChecked() ? server.setActivity() : server.clearActivity())
 				      .thenRun(() -> this.minecraft.ingameGUI.getChatGUI().printChatMessage(

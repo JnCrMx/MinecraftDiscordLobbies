@@ -134,8 +134,14 @@ public class LobbySelectionList extends ExtendedList<LobbySelectionList.LobbyEnt
 		{
 			this.mc.fontRenderer.drawString(stack, this.lobby.getMinecraftWorld(), rowLeft + 32 + 3, rowTop + 1,
 			                                Objects.requireNonNull(TextFormatting.WHITE.getColor()));
-			this.mc.fontRenderer.drawString(stack, Long.toString(this.lobby.getLobby().getId()), rowLeft + 32 + 3, rowTop + 1 + 11,
-			                                Objects.requireNonNull(TextFormatting.DARK_GRAY.getColor()));
+
+			ITextComponent versionMessage = lobby.getVersionMessage();
+			if(versionMessage == null)
+			{
+				versionMessage = new StringTextComponent(Long.toString(lobby.getId()))
+						.mergeStyle(TextFormatting.DARK_GRAY);
+			}
+			this.mc.fontRenderer.func_243248_b(stack, versionMessage, rowLeft + 32 + 3, rowTop + 1 + 11, 3158064);
 
 			String discordOwner = lobby.getOwner().getUsername()+"#"+lobby.getOwner().getDiscriminator();
 			ITextComponent owner = (new StringTextComponent(lobby.getMinecraftOwner()).mergeStyle(TextFormatting.GRAY))

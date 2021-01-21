@@ -91,6 +91,12 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 		LobbyMemberTransaction mTxn = core.lobbyManager().getMemberUpdateTransaction(lobby, userId);
 		mTxn.setMetadata("minecraft.username", session.getUsername());
 		mTxn.setMetadata("minecraft.uuid", session.getPlayerID());
+		mTxn.setMetadata("minecraft.version", DiscordLobbiesMod.MINECRAFT_VERSION.toString());
+
+		mTxn.setMetadata("lobby.version", DiscordLobbiesMod.MY_VERSION.toString());
+
+		mTxn.setMetadata("forge.version", DiscordLobbiesMod.FORGE_VERSION.toString());
+
 		mTxn.setMetadata("network.peer_id", Long.toUnsignedString(core.networkManager().getPeerId()));
 		if(DiscordLobbiesMod.myRoute != null)
 			mTxn.setMetadata("network.route", DiscordLobbiesMod.myRoute);

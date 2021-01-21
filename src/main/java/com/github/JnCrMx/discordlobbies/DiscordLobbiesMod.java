@@ -8,14 +8,20 @@ import de.jcm.discordgamesdk.user.DiscordUser;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,6 +99,10 @@ public class DiscordLobbiesMod
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final boolean DEV = !FMLLoader.isProduction();
 
+	public static ArtifactVersion MINECRAFT_VERSION;
+	public static ArtifactVersion FORGE_VERSION;
+	public static ArtifactVersion MY_VERSION;
+
 	private static CreateParams createParams;
 	public static Core core;
 	public static boolean discordPresent;
@@ -112,6 +122,18 @@ public class DiscordLobbiesMod
 
 		// Register ourselves for server and other game events we are interested in
 		MinecraftForge.EVENT_BUS.register(this);
+
+		MY_VERSION = ModLoadingContext.get().getActiveContainer().getModInfo().getVersion();
+		MINECRAFT_VERSION = ModList
+				.get().getModContainerById("minecraft")
+				.map(ModContainer::getModInfo)
+				.map(IModInfo::getVersion)
+				.orElse(new DefaultArtifactVersion("MISSING"));
+		FORGE_VERSION = ModList
+				.get().getModContainerById("forge")
+				.map(ModContainer::getModInfo)
+				.map(IModInfo::getVersion)
+				.orElse(new DefaultArtifactVersion("MISSING"));
 	}
 
 	private void setup(final FMLCommonSetupEvent event)

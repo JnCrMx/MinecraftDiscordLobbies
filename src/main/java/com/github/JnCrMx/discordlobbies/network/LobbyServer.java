@@ -76,7 +76,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		server.serverPort = 0;
 	}
 
-	public CompletableFuture<Void> createLobby(LobbyType type, boolean locked)
+	public CompletableFuture<Void> createLobby(LobbyType type, boolean locked, boolean shareable)
 	{
 		LobbyTransaction txn = core.lobbyManager().getLobbyCreateTransaction();
 		txn.setType(type);
@@ -86,6 +86,12 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		txn.setMetadata("minecraft.world", server.getServerConfiguration().getWorldName());
 		txn.setMetadata("minecraft.owner", server.getServerOwner());
 		txn.setMetadata("minecraft.motd", server.getMOTD());
+		txn.setMetadata("minecraft.version", DiscordLobbiesMod.MINECRAFT_VERSION.toString());
+
+		txn.setMetadata("lobby.shareable", Boolean.toString(shareable));
+		txn.setMetadata("lobby.version", "2.0");
+
+		txn.setMetadata("forge.version", DiscordLobbiesMod.FORGE_VERSION.toString());
 
 		CompletableFuture<Lobby> future = new CompletableFuture<>();
 		core.lobbyManager().createLobby(txn, DiscordUtils.returningCompleter(future));
@@ -93,11 +99,13 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		return future.thenAccept(lobby->this.lobby = lobby);
 	}
 
-	public CompletableFuture<Void> updateLobby(LobbyType type, boolean locked)
+	public CompletableFuture<Void> updateLobby(LobbyType type, boolean locked, boolean shareable)
 	{
 		LobbyTransaction txn = core.lobbyManager().getLobbyUpdateTransaction(lobby);
 		txn.setType(type);
 		txn.setLocked(locked);
+
+		txn.setMetadata("lobby.shareable", Boolean.toString(shareable));
 
 		CompletableFuture<Void> future = new CompletableFuture<>();
 		core.lobbyManager().updateLobby(lobby, txn, DiscordUtils.completer(future));
@@ -110,6 +118,12 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		LobbyMemberTransaction mTxn = core.lobbyManager().getMemberUpdateTransaction(lobby, userId);
 		mTxn.setMetadata("minecraft.username", player.getGameProfile().getName());
 		mTxn.setMetadata("minecraft.uuid", player.getGameProfile().getId().toString());
+		mTxn.setMetadata("minecraft.version", DiscordLobbiesMod.MINECRAFT_VERSION.toString());
+
+		mTxn.setMetadata("lobby.version", DiscordLobbiesMod.MY_VERSION.toString());
+
+		mTxn.setMetadata("forge.version", DiscordLobbiesMod.FORGE_VERSION.toString());
+
 		mTxn.setMetadata("network.peer_id", Long.toUnsignedString(core.networkManager().getPeerId()));
 		if(DiscordLobbiesMod.myRoute != null)
 			mTxn.setMetadata("network.route", DiscordLobbiesMod.myRoute);
