@@ -89,7 +89,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		txn.setMetadata("minecraft.version", DiscordLobbiesMod.MINECRAFT_VERSION.toString());
 
 		txn.setMetadata("lobby.shareable", Boolean.toString(shareable));
-		txn.setMetadata("lobby.version", "2.0");
+		txn.setMetadata("lobby.version", DiscordLobbiesMod.MY_VERSION.toString());
 
 		txn.setMetadata("forge.version", DiscordLobbiesMod.FORGE_VERSION.toString());
 
@@ -147,7 +147,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 			activity.setDetails(server.getServerConfiguration().getWorldName());
 			activity.setInstance(true);
 			activity.party().setID(String.valueOf(lobby.getId()));
-			activity.party().size().setCurrentSize(server.getPlayerList().getCurrentPlayerCount());
+			activity.party().size().setCurrentSize(core.lobbyManager().memberCount(lobby));
 			activity.party().size().setMaxSize(lobby.getCapacity());
 			activity.secrets().setJoinSecret(getActivitySecret());
 
@@ -186,6 +186,12 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 
 		TranslationTextComponent c = new TranslationTextComponent("lobby.player.joined", name);
 		server.getPlayerList().func_232641_a_(c.mergeStyle(TextFormatting.YELLOW), ChatType.SYSTEM, Util.DUMMY_UUID);
+
+		if(setAsActivity)
+		{
+			// update current Lobby size
+			setActivity();
+		}
 	}
 
 	@Override
@@ -208,6 +214,12 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 			{
 				networkManager.closeChannel(new TranslationTextComponent("disconnect.quitting"));
 			}
+		}
+
+		if(setAsActivity)
+		{
+			// update current Lobby size
+			setActivity();
 		}
 	}
 
@@ -250,7 +262,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 			}
 			else
 			{
-				LOGGER.info("Received new route for user {} ({}) aka peer {}: {}",
+				LOGGER.debug("Received new route for user {} ({}) aka peer {}: {}",
 				             username, userId,
 				             Long.toUnsignedString(peerId),
 				             route);
@@ -259,8 +271,8 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 		}
 		else
 		{
-			LOGGER.info("Received initial route for user {} ({}) aka peer {}: {}",
-			             user, userId,
+			LOGGER.debug("Received initial route for user {} ({}) aka peer {}: {}",
+			             username, userId,
 			             Long.toUnsignedString(peerId),
 			             route);
 			peerIds.put(userId, peerId);
@@ -280,6 +292,7 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 			{
 				networkSystem.networkManagers.add(manager);
 			}
+			LOGGER.info("Connection to {} ready.", username);
 		}
 	}
 

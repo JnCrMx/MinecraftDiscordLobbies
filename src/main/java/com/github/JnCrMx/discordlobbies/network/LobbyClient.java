@@ -4,6 +4,7 @@ import com.github.JnCrMx.discordlobbies.DiscordLobbiesMod;
 import de.jcm.discordgamesdk.Core;
 import de.jcm.discordgamesdk.DiscordEventAdapter;
 import de.jcm.discordgamesdk.DiscordUtils;
+import de.jcm.discordgamesdk.activity.Activity;
 import de.jcm.discordgamesdk.lobby.Lobby;
 import de.jcm.discordgamesdk.lobby.LobbyMemberTransaction;
 import de.jcm.discordgamesdk.user.DiscordUser;
@@ -13,6 +14,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.SucceededFuture;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketDirection;
 import net.minecraft.util.Session;
@@ -39,6 +41,8 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 
 	private final long userId;
 	private Lobby lobby;
+	private boolean lobbyShareable;
+	private boolean setAsActivity;
 
 	private DiscordUser serverUser;
 	private long serverPeerId;
@@ -62,7 +66,11 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 		CompletableFuture<Lobby> future = new CompletableFuture<>();
 		core.lobbyManager().connectLobby(lobbyId, secret, DiscordUtils.returningCompleter(future));
 
-		return future.thenAccept(lobby->this.lobby = lobby);
+		return future.thenAccept(lobby->{
+			this.lobby = lobby;
+			this.lobbyShareable = Boolean.parseBoolean(
+					core.lobbyManager().getLobbyMetadataValue(lobby, "lobby.shareable"));
+		});
 	}
 
 	public CompletableFuture<Void> connectToLobby(String activitySecret)
@@ -70,7 +78,11 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 		CompletableFuture<Lobby> future = new CompletableFuture<>();
 		core.lobbyManager().connectLobbyWithActivitySecret(activitySecret, DiscordUtils.returningCompleter(future));
 
-		return future.thenAccept(lobby->this.lobby = lobby);
+		return future.thenAccept(lobby->{
+			this.lobby = lobby;
+			this.lobbyShareable = Boolean.parseBoolean(
+					core.lobbyManager().getLobbyMetadataValue(lobby, "lobby.shareable"));
+		});
 	}
 
 	public CompletableFuture<Void> prepareNetworking(Session session)
@@ -107,6 +119,33 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 		core.lobbyManager().updateMember(lobby, userId, mTxn, DiscordUtils.completer(future));
 
 		return future.thenCombine(awaitServerReady, (a,b)->null);
+	}
+
+	public CompletableFuture<Void> setActivity()
+	{
+		try(Activity activity = new Activity())
+		{
+			activity.setState(core.lobbyManager().getLobbyMetadataValue(lobby, "minecraft.owner"));
+			activity.setDetails(core.lobbyManager().getLobbyMetadataValue(lobby, "minecraft.world"));
+			activity.setInstance(true);
+			activity.party().setID(String.valueOf(lobby.getId()));
+			activity.party().size().setCurrentSize(core.lobbyManager().memberCount(lobby));
+			activity.party().size().setMaxSize(lobby.getCapacity());
+			activity.secrets().setJoinSecret(core.lobbyManager().getLobbyActivitySecret(lobby));
+
+			CompletableFuture<Void> future = new CompletableFuture<>();
+			core.activityManager().updateActivity(activity, DiscordUtils.completer(future));
+
+			return future.thenAccept(v->this.setAsActivity = true);
+		}
+	}
+
+	public CompletableFuture<Void> clearActivity()
+	{
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		core.activityManager().clearActivity(DiscordUtils.completer(future));
+
+		return future.thenAccept(v->this.setAsActivity = false);
 	}
 
 	@Override
@@ -178,6 +217,16 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	}
 
 	@Override
+	public void onMemberConnect(long lobbyId, long userId)
+	{
+		if(setAsActivity)
+		{
+			// update current Lobby size
+			setActivity();
+		}
+	}
+
+	@Override
 	public void onMemberDisconnect(long lobbyId, long userId)
 	{
 		if(lobbyId != lobby.getId())
@@ -197,6 +246,12 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 			{
 				onLobbyDelete(lobbyId, 0);
 			}
+		}
+
+		if(setAsActivity)
+		{
+			// update current Lobby size
+			setActivity();
 		}
 	}
 
@@ -226,6 +281,10 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 
 		core.lobbyManager().disconnectLobby(lobby, Core.DEFAULT_CALLBACK
 				.andThen(r->LOGGER.info("Left the lobby due to closed connection.")));
+		if(setAsActivity)
+		{
+			clearActivity();
+		}
 
 		DiscordLobbiesMod.eventHandler.removeListener(this);
 	}
@@ -307,5 +366,37 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	public DiscordNetworkManager networkManager()
 	{
 		return networkManager;
+	}
+
+	@Override
+	public void onLobbyUpdate(long lobbyId)
+	{
+		if(lobbyId != lobby.getId())
+			return;
+
+		this.lobbyShareable = Boolean.parseBoolean(
+				core.lobbyManager().getLobbyMetadataValue(lobby, "lobby.shareable"));
+
+		if(!lobbyShareable && setAsActivity)
+		{
+			clearActivity().thenRun(
+					()->Minecraft.getInstance().ingameGUI.getChatGUI().printChatMessage(
+							new TranslationTextComponent("clientShare.forbidden"))).whenComplete((r, t)->{
+				if(t == null) return;
+				Minecraft.getInstance().ingameGUI.getChatGUI().printChatMessage(
+						new TranslationTextComponent("clientShare.failed", t.getMessage()));
+			});
+			setAsActivity = false;
+		}
+	}
+
+	public boolean isShareable()
+	{
+		return lobbyShareable;
+	}
+
+	public boolean isSetAsActivity()
+	{
+		return setAsActivity;
 	}
 }

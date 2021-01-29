@@ -167,9 +167,9 @@ public class DiscordNetworkManager extends NetworkManager
 		}
 
 		if(packetIn instanceof SKeepAlivePacket)
-			LOGGER.info("Server keep alive: {}", ((SKeepAlivePacket)packetIn).getId());
+			LOGGER.debug("Server keep alive: {}", ((SKeepAlivePacket)packetIn).getId());
 		if(packetIn instanceof CKeepAlivePacket)
-			LOGGER.info("Client keep alive: {}", ((CKeepAlivePacket)packetIn).getKey());
+			LOGGER.debug("Client keep alive: {}", ((CKeepAlivePacket)packetIn).getKey());
 	}
 
 	public void readPacket(ByteBuf buf, byte channel) throws IOException
@@ -306,9 +306,9 @@ public class DiscordNetworkManager extends NetworkManager
 	private void processPacket(IPacket<?> packet)
 	{
 		if(packet instanceof SKeepAlivePacket)
-			LOGGER.info("Server keep alive: {}", ((SKeepAlivePacket)packet).getId());
+			LOGGER.debug("Server keep alive: {}", ((SKeepAlivePacket)packet).getId());
 		if(packet instanceof CKeepAlivePacket)
-			LOGGER.info("Client keep alive: {}", ((CKeepAlivePacket)packet).getKey());
+			LOGGER.debug("Client keep alive: {}", ((CKeepAlivePacket)packet).getKey());
 
 		if(getDirection() == PacketDirection.SERVERBOUND) // server-only stuff
 		{
@@ -457,7 +457,7 @@ public class DiscordNetworkManager extends NetworkManager
 				((ClientPlayNetHandler)getNetHandler()).getWorld() != null &&
 				!inboundQueue.isEmpty())
 		{
-			LOGGER.info("Processing ahead-of-time packets: "+inboundQueue.size());
+			LOGGER.debug("Processing ahead-of-time packets: "+inboundQueue.size());
 			inboundQueue.sort(Comparator.comparing(Pair::getLeft));
 			Iterator<Pair<Long, IPacket<?>>> it = inboundQueue.iterator();
 			while(it.hasNext())

@@ -75,23 +75,56 @@ public class GuiHooks
 
 	private static void inGameMenuHook(GuiScreenEvent.InitGuiEvent event)
 	{
-		if(!Minecraft.getInstance().isSingleplayer())
-			return;
-
 		Screen s = event.getGui();
 
 		ITextComponent buttonText;
 		Button.IPressable buttonAction;
 
-		if(DiscordLobbiesMod.theServer == null)
+		if(DiscordLobbiesMod.theServer == null && Minecraft.getInstance().isSingleplayer())
 		{
 			buttonText = new TranslationTextComponent("menu.shareToDiscord");
 			buttonAction = e->s.getMinecraft().displayGuiScreen(new ShareToDiscordScreen(s));
 		}
-		else
+		else if(DiscordLobbiesMod.theServer != null)
 		{
 			buttonText = new TranslationTextComponent("shareToDiscord.update");
 			buttonAction = e->s.getMinecraft().displayGuiScreen(new ShareToDiscordScreen(s, DiscordLobbiesMod.theServer));
+		}
+		else if(DiscordLobbiesMod.theClient != null && DiscordLobbiesMod.theClient.isShareable())
+		{
+			Minecraft minecraft = event.getGui().getMinecraft();
+			if(DiscordLobbiesMod.theClient.isSetAsActivity())
+			{
+				buttonText = new TranslationTextComponent("clientShare.clearActivity");
+				buttonAction = e->{
+					minecraft.displayGuiScreen(null);
+					DiscordLobbiesMod.theClient.clearActivity().thenRun(
+							()->minecraft.ingameGUI.getChatGUI().printChatMessage(
+									new TranslationTextComponent("clientShare.success"))).whenComplete((r, t)->{
+						if(t == null) return;
+						minecraft.ingameGUI.getChatGUI().printChatMessage(
+								new TranslationTextComponent("clientShare.failed", t.getMessage()));
+					});
+				};
+			}
+			else
+			{
+				buttonText = new TranslationTextComponent("clientShare.setActivity");
+				buttonAction = e->{
+					minecraft.displayGuiScreen(null);
+					DiscordLobbiesMod.theClient.setActivity().thenRun(
+							()->minecraft.ingameGUI.getChatGUI().printChatMessage(
+									new TranslationTextComponent("clientShare.success"))).whenComplete((r, t)->{
+						if(t == null) return;
+						minecraft.ingameGUI.getChatGUI().printChatMessage(
+								new TranslationTextComponent("clientShare.failed", t.getMessage()));
+					});
+				};
+			}
+		}
+		else
+		{
+			return;
 		}
 
 		Button button = new Button(s.width / 2 + 4 + 98, s.height / 4 + 96 + -16,

@@ -234,7 +234,7 @@ public class DiscordMultiplayerScreen extends Screen
 	public void connectToLobby(@NotNull LobbySelectionList.LobbyEntry entry)
 	{
 		assert this.minecraft != null;
-		this.minecraft.displayGuiScreen(new DiscordConnectingScreen(this.previousScreen, entry.getLobby()));
+		this.minecraft.displayGuiScreen(new DiscordConnectingScreen(this, entry.getLobby()));
 	}
 
 	@Override
