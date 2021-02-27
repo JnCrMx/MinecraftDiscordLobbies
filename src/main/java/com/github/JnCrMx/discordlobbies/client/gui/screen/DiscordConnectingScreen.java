@@ -16,7 +16,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -134,7 +133,7 @@ public class DiscordConnectingScreen extends Screen
 	}
 
 	@Override
-	public void render(@NotNull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
 	{
 		this.renderBackground(matrixStack);
 

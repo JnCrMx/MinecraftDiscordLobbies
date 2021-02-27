@@ -18,7 +18,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -231,7 +230,7 @@ public class DiscordMultiplayerScreen extends Screen
 		connectButton.active = entry != null;
 	}
 
-	public void connectToLobby(@NotNull LobbySelectionList.LobbyEntry entry)
+	public void connectToLobby(LobbySelectionList.LobbyEntry entry)
 	{
 		assert this.minecraft != null;
 		this.minecraft.displayGuiScreen(new DiscordConnectingScreen(this, entry.getLobby()));
@@ -255,7 +254,7 @@ public class DiscordMultiplayerScreen extends Screen
 	}
 
 	@Override
-	public void render(@NotNull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
 	{
 		this.renderBackground(matrixStack);
 		drawCenteredString(matrixStack, this.font, this.title, this.width / 2, 20, 16777215);

@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-version = '1.0'
+version = '0.1-alpha'
 group = 'com.github.JnCrMx.discordlobbies' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'DiscordLobbies'
 
@@ -102,8 +102,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.4-35.1.4'
 
-    shadow 'com.github.jncrmx:discord-game-sdk4j:0.5'
-    implementation 'com.github.jncrmx:discord-game-sdk4j:0.5'
+    shadow 'com.github.jncrmx:discord-game-sdk4j:0.5.1'
+    implementation 'com.github.jncrmx:discord-game-sdk4j:0.5.1'
 }
 
 processResources {

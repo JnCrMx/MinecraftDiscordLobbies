@@ -7,7 +7,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import org.jetbrains.annotations.NotNull;
 
 public class LobbyDirectConnectScreen extends Screen
 {
@@ -57,7 +56,7 @@ public class LobbyDirectConnectScreen extends Screen
 		connectButton.active = !s.isEmpty() && s.contains(":") && !s.startsWith(" ") && !s.endsWith(" ");
 	}
 
-	public void render(@NotNull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
 	{
 		this.renderBackground(matrixStack);
 		drawCenteredString(matrixStack, this.font, this.title, this.width / 2, 20, 16777215);

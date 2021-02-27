@@ -12,8 +12,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -62,7 +60,7 @@ public class LobbySelectionList extends ExtendedList<LobbySelectionList.LobbyEnt
 	}
 
 	@Override
-	public void setSelected(@Nullable LobbySelectionList.LobbyEntry entry)
+	public void setSelected(LobbySelectionList.LobbyEntry entry)
 	{
 		super.setSelected(entry);
 		selectionListener.accept(entry);
@@ -130,8 +128,7 @@ public class LobbySelectionList extends ExtendedList<LobbySelectionList.LobbyEnt
 		}
 
 		@Override
-		public void render(@NotNull MatrixStack stack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean mouseOver, float partialTicks)
-		{
+		public void render(MatrixStack stack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean mouseOver, float partialTicks)		{
 			this.mc.fontRenderer.drawString(stack, this.lobby.getMinecraftWorld(), rowLeft + 32 + 3, rowTop + 1,
 			                                Objects.requireNonNull(TextFormatting.WHITE.getColor()));
 

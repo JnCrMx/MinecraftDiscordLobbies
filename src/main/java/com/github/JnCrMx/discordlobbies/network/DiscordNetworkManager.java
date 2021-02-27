@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -88,13 +87,13 @@ public class DiscordNetworkManager extends NetworkManager
 	}
 
 	@Override
-	public @NotNull Channel channel()
+	public Channel channel()
 	{
 		return fakeChannel;
 	}
 
 	@Override
-	public void sendPacket(@NotNull IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> listener)
+	public void sendPacket(IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> listener)
 	{
 		if(getDirection() == PacketDirection.SERVERBOUND &&
 				packetIn instanceof SCustomPayloadLoginPacket)
@@ -114,7 +113,7 @@ public class DiscordNetworkManager extends NetworkManager
 		}
 	}
 
-	private void dispatchPacket(@NotNull IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> listener)
+	private void dispatchPacket(IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> listener)
 	{
 		if(!open)
 		{
@@ -344,7 +343,7 @@ public class DiscordNetworkManager extends NetworkManager
 	}
 
 	@Override
-	public void closeChannel(@NotNull ITextComponent message)
+	public void closeChannel(ITextComponent message)
 	{
 		open = false;
 		communicator.closeConnection(userId);
@@ -380,7 +379,7 @@ public class DiscordNetworkManager extends NetworkManager
 	}
 
 	@Override
-	public void setConnectionState(@NotNull ProtocolType newState)
+	public void setConnectionState(ProtocolType newState)
 	{
 		this.protocolType = newState;
 	}
@@ -404,7 +403,7 @@ public class DiscordNetworkManager extends NetworkManager
 	}
 
 	@Override
-	public @NotNull SocketAddress getRemoteAddress()
+	public SocketAddress getRemoteAddress()
 	{
 		try
 		{

@@ -16,7 +16,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class ShareToDiscordScreen extends Screen
@@ -146,7 +145,7 @@ public class ShareToDiscordScreen extends Screen
 	}
 
 	@Override
-	public void render(@NotNull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
 	{
 		this.renderBackground(matrixStack);
 		drawCenteredString(matrixStack, this.font, this.title, this.width / 2, 50, 16777215);
