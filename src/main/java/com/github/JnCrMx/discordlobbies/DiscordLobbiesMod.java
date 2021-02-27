@@ -18,6 +18,7 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.forgespi.language.IModInfo;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -97,6 +98,7 @@ public class DiscordLobbiesMod
 	public static final String MOD_ID = "discordlobbies";
 	// Directly reference a log4j logger.
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger DISCORD_LOGGER = LogManager.getLogger("DiscordGameSDK");
 	public static final boolean DEV = !FMLLoader.isProduction();
 
 	public static ArtifactVersion MINECRAFT_VERSION;
@@ -181,6 +183,26 @@ public class DiscordLobbiesMod
 		{
 			core = new Core(createParams);
 			core.runCallbacks();
+			core.setLogHook(LogLevel.DEBUG, (level, message)->{
+				Level level1 = Level.INFO;
+				switch(level)
+				{
+					case ERROR:
+						level1 = Level.ERROR;
+						break;
+					case WARN:
+						level1 = Level.WARN;
+						break;
+					case INFO:
+						level1 = Level.INFO;
+						break;
+					case DEBUG:
+						level1 = Level.DEBUG;
+						break;
+				}
+
+				DISCORD_LOGGER.log(level1, message);
+			});
 			LOGGER.info("Initialized Discord Game SDK!");
 			discordPresent = true;
 		}
