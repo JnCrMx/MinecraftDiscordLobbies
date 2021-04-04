@@ -17,6 +17,7 @@ import io.netty.util.concurrent.SucceededFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketDirection;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.Session;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -263,7 +264,7 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 
 		if(networkManager.isChannelOpen())
 		{
-			networkManager.closeChannel(new TranslationTextComponent("disconnect.lobbyClosed"));
+			networkManager.closeChannel(new ChatComponentTranslation("disconnect.lobbyClosed"));
 		}
 	}
 

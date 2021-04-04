@@ -55,7 +55,7 @@ public class DiscordNetworkManager extends NetworkManager
 	// for SCustomPayloadLoginPacket and CCustomPayloadLoginPacket
 	private final AtomicInteger pingCount = new AtomicInteger(0);
 	private final AtomicInteger pongCount = new AtomicInteger(0);
-	private final Queue<Pair<IPacket<?>, GenericFutureListener<? extends Future<? super Void>>>> pingPongQueue = new ConcurrentLinkedQueue<>();
+	private final Queue<Pair<Packet, GenericFutureListener<?>[]>> pingPongQueue = new ConcurrentLinkedQueue<>();
 
 	private ProtocolType protocolType;
 
@@ -69,7 +69,7 @@ public class DiscordNetworkManager extends NetworkManager
 	private boolean keepAliveReceived;
 
 	// Client stuff
-	private final ArrayList<Pair<Long, IPacket<?>>> inboundQueue = new ArrayList<>();
+	private final ArrayList<Pair<Long, Packet>> inboundQueue = new ArrayList<>();
 
 	// Statistics
 	private final List<Map<Class<?>, Integer>> incomingStats = IntStream.range(0, CHANNELS.length)
@@ -77,9 +77,9 @@ public class DiscordNetworkManager extends NetworkManager
 	                                                                    .collect(Collectors.toCollection(ArrayList::new));
 	private final int[] channelLoads = new int[CHANNELS.length];
 
-	public DiscordNetworkManager(PacketDirection packetDirection, LobbyCommunicator communicator, long userId)
+	public DiscordNetworkManager(boolean isClientSide, LobbyCommunicator communicator, long userId)
 	{
-		super(packetDirection);
+		super(isClientSide);
 		this.communicator = communicator;
 		this.userId = userId;
 		this.open = true;
@@ -93,7 +93,7 @@ public class DiscordNetworkManager extends NetworkManager
 	}
 
 	@Override
-	public void sendPacket(IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> listener)
+	public void scheduleOutboundPacket(Packet packetIn, GenericFutureListener... listeners)
 	{
 		if(getDirection() == PacketDirection.SERVERBOUND &&
 				packetIn instanceof SCustomPayloadLoginPacket)
@@ -105,15 +105,15 @@ public class DiscordNetworkManager extends NetworkManager
 			in a queue and only send the next request after received the response to the
 			previous one.
 			 */
-			pingPongQueue.add(new ImmutablePair<>(packetIn, listener));
+			pingPongQueue.add(new ImmutablePair<Packet, GenericFutureListener<?>[]>(packetIn, listeners));
 		}
 		else
 		{
-			dispatchPacket(packetIn, listener);
+			dispatchPacket(packetIn, listeners);
 		}
 	}
 
-	private void dispatchPacket(IPacket<?> packetIn, @Nullable GenericFutureListener<? extends Future<? super Void>> listener)
+	private void dispatchPacket(Packet packetIn, GenericFutureListener<?>... listeners)
 	{
 		if(!open)
 		{

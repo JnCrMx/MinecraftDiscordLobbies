@@ -3,26 +3,19 @@ package com.github.JnCrMx.discordlobbies;
 import com.github.JnCrMx.discordlobbies.client.ActivityJoinListener;
 import com.github.JnCrMx.discordlobbies.network.LobbyClient;
 import com.github.JnCrMx.discordlobbies.network.LobbyServer;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import de.jcm.discordgamesdk.*;
 import de.jcm.discordgamesdk.user.DiscordUser;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,8 +25,7 @@ import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod(DiscordLobbiesMod.MOD_ID)
+@Mod(modid = DiscordLobbiesMod.MOD_ID, name = DiscordLobbiesMod.MOD_ID)
 public class DiscordLobbiesMod
 {
 	public static File downloadDiscordLibrary() throws IOException
@@ -118,11 +110,6 @@ public class DiscordLobbiesMod
 
 	public DiscordLobbiesMod()
 	{
-		// Register the setup method for modloading
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-
-		// Register ourselves for server and other game events we are interested in
 		MinecraftForge.EVENT_BUS.register(this);
 
 		MY_VERSION = ModLoadingContext.get().getActiveContainer().getModInfo().getVersion();
@@ -138,7 +125,8 @@ public class DiscordLobbiesMod
 				.orElse(new DefaultArtifactVersion("MISSING"));
 	}
 
-	private void setup(final FMLCommonSetupEvent event)
+	@Mod.EventHandler
+	public void init(FMLInitializationEvent event)
 	{
 		try
 		{
@@ -213,10 +201,11 @@ public class DiscordLobbiesMod
 		}
 	}
 
-	private void clientSetup(FMLClientSetupEvent event)
+	@Mod.EventHandler
+	public void clientSetup(FMLPostInitializationEvent event)
 	{
 		if(discordPresent)
-			eventHandler.addListener(new ActivityJoinListener(event.getMinecraftSupplier().get()));
+			eventHandler.addListener(new ActivityJoinListener(Minecraft.getMinecraft()));
 	}
 
 	@SubscribeEvent

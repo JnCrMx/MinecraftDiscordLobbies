@@ -3,7 +3,7 @@ package com.github.JnCrMx.discordlobbies.client;
 import com.github.JnCrMx.discordlobbies.client.gui.screen.DiscordConnectingScreen;
 import de.jcm.discordgamesdk.DiscordEventAdapter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.ChatComponentTranslation;
 
 public class ActivityJoinListener extends DiscordEventAdapter
 {
@@ -17,12 +17,12 @@ public class ActivityJoinListener extends DiscordEventAdapter
 	@Override
 	public void onActivityJoin(String secret)
 	{
-		if(this.minecraft.world != null)
+		if(this.minecraft.theWorld != null)
 		{
-			this.minecraft.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent("activityJoin.alreadyInWorld"));
+			this.minecraft.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("activityJoin.alreadyInWorld"));
 			return;
 		}
 
-		minecraft.execute(()->minecraft.displayGuiScreen(new DiscordConnectingScreen(minecraft.currentScreen, secret)));
+		minecraft.displayGuiScreen(new DiscordConnectingScreen(minecraft.currentScreen, secret));
 	}
 }
