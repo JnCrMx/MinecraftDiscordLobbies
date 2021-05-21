@@ -102,8 +102,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.4-35.1.4'
 
-    shadow 'com.github.jncrmx:discord-game-sdk4j:0.5.2'
-    implementation 'com.github.jncrmx:discord-game-sdk4j:0.5.2'
+    shadow 'com.github.jncrmx:discord-game-sdk4j:0.5.3'
+    implementation 'com.github.jncrmx:discord-game-sdk4j:0.5.3'
 }
 
 processResources {
