@@ -8,9 +8,9 @@ import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.CheckboxButton;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.ArrayUtils;
@@ -102,8 +102,16 @@ public class ShareToDiscordScreen extends Screen
 				server.createLobby(type, lockButton.isChecked(), activityButton.isChecked())
 				      .thenCompose(v -> server.selfJoin(minecraft.player))
 				      .thenCompose(v -> activityButton.isChecked() ? server.setActivity() : server.clearActivity())
-				      .thenRun(() -> this.minecraft.ingameGUI.getChatGUI().printChatMessage(
-				      		new TranslationTextComponent("shareToDiscord.started", server.getActivitySecret())))
+				      .thenRun(() -> {
+				      	String secret = server.getActivitySecret();
+				      	ITextComponent itextcomponent = new StringTextComponent(secret).modifyStyle(
+				      			(t) -> t.setFormatting(TextFormatting.GREEN)
+						                .setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, secret))
+						                .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("chat.copy.click")))
+						                .setInsertion(secret));
+				      	this.minecraft.ingameGUI.getChatGUI().printChatMessage(
+				      			new TranslationTextComponent("shareToDiscord.started", itextcomponent));
+				      })
 				      .whenComplete((r,t)->{
 					      if(t == null) return;
 					      LOGGER.error("Failed to create lobby", t);
