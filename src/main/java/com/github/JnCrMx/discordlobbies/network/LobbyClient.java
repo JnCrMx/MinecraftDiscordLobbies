@@ -15,10 +15,12 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.SucceededFuture;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketDirection;
 import net.minecraft.util.Session;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,8 +127,14 @@ public class LobbyClient extends DiscordEventAdapter implements LobbyCommunicato
 	{
 		try(Activity activity = new Activity())
 		{
-			activity.setState(core.lobbyManager().getLobbyMetadataValue(lobby, "minecraft.owner"));
-			activity.setDetails(core.lobbyManager().getLobbyMetadataValue(lobby, "minecraft.world"));
+			activity.setState(I18n.format(
+					"activity.state",
+					Minecraft.getInstance().getSession().getUsername()));
+			activity.setDetails(I18n.format(
+					"activity.details",
+					core.lobbyManager().getLobbyMetadataValue(lobby, "minecraft.owner"),
+					core.lobbyManager().getLobbyMetadataValue(lobby, "minecraft.world"),
+					ModList.get().size()));
 			activity.setInstance(true);
 			activity.party().setID(String.valueOf(lobby.getId()));
 			activity.party().size().setCurrentSize(core.lobbyManager().memberCount(lobby));

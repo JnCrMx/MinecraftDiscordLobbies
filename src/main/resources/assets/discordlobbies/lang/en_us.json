@@ -32,5 +32,7 @@
   "versionConflict.forge.different": "Forge version (%s) different!",
   "versionConflict.minecraft.unknown": "Minecraft version unknown!",
   "versionConflict.minecraft.incompatible": "Minecraft version (%s) probably incompatible!",
-  "versionConflict.minecraft.different": "Minecraft version (%s) different!"
+  "versionConflict.minecraft.different": "Minecraft version (%s) different!",
+  "activity.state": "%s",
+  "activity.details": "\"%2$s\" by %1$s (%3$d mods)"
 }

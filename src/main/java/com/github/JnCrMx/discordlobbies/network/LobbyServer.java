@@ -17,6 +17,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.SucceededFuture;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.NetworkSystem;
 import net.minecraft.network.PacketBuffer;
@@ -27,6 +28,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.ModList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -143,8 +145,14 @@ public class LobbyServer extends DiscordEventAdapter implements LobbyCommunicato
 	{
 		try(Activity activity = new Activity())
 		{
-			activity.setState(server.getServerOwner());
-			activity.setDetails(server.getServerConfiguration().getWorldName());
+			activity.setState(I18n.format(
+					"activity.state",
+					server.getServerOwner()));
+			activity.setDetails(I18n.format(
+					"activity.details",
+					server.getServerOwner(),
+					server.getServerConfiguration().getWorldName(),
+					ModList.get().size()));
 			activity.setInstance(true);
 			activity.party().setID(String.valueOf(lobby.getId()));
 			activity.party().size().setCurrentSize(core.lobbyManager().memberCount(lobby));
