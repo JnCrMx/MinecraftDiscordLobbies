@@ -1,4 +1,7 @@
 # MinecraftDiscordLobbies
+
+## ⚠️ No longer functional due to [Discord decommissioning](https://discord.com/developers/docs/change-log#gamesdk-feature-deprecation) the Networking feature of the Game SDK.
+
 A Minecraft mod providing (poorly working) multiplayer over Discord.
 
 ## Download
